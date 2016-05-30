@@ -4,7 +4,7 @@ I want to make a visualisation where people can see an overview of where refugee
 
 The visualisation should be an interactive map of the whole planet, where movement of refugees is visable as a kind of arrows between countries. Like on the sketch beneath.
 
-![](doc/first_skecth.png)
+![](doc/first_sketch.png)
 
 I will need data on numbers of refugees, where they’re from and where they go to. Sources: UN and similar. If there is irrelevant information, then first filter it out. Store the data as csv or JSON.
 
