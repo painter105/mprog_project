@@ -1,5 +1,4 @@
 # Design document
-## Refugee history (not finished yet)
 
 ### Elements of the Visualisation
 
@@ -11,16 +10,18 @@
 	* Map configuration
 	* Draws the arrows (dependent on year)
 		* data (csv)
-	* Opens tooltip if clicked on country and draws additional graphs
+	* Shows extra info if clicked on country and draws additional graphs
 		* data (csv)
 
--> Van tevoren het midden van de landen berekenen
--> Pijlen tekenen op te svg van de kaart
 
 
 ### Sketches
-TODO: drawings
--> Als je klikt op een land: vervaag alle pijlen, bahalve van en naar dat land (+ maak optie om van/naar in/uit te schakelen)
+![](doc/sketch_21.png)
+By clicking on country: information is presented in tab on the right. Also the arrows to and from the country are highlighted.
+The exaxt location of arrows to begin/end will be calculated before and stored in a separate file.
+
+![](doc/sketch_22.png)
+Info displayed in different tabs
 
 ### Used APIs and Plugins
 * D3.js
