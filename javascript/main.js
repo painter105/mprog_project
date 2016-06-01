@@ -1,4 +1,5 @@
-/* use this to test out your function */
+// Patrick Schilder
+
 window.onload = function() {
  	var custom_map = new Datamap({
  
