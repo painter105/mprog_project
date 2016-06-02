@@ -6,3 +6,6 @@ Looking which map to use for visualisation (one with countrynames already includ
 
 # Day 3
 Writing design document and thinking on how to read the data.
+
+# Day 4
+Working on the look of the website (css) and added a slider for selecting the year (without function till now)

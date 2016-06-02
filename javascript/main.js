@@ -23,6 +23,10 @@ window.onload = function() {
 		    function redraw() {
 		        datamap.svg.selectAll("g").attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 		    }
+
+		    datamap.svg.selectAll('.datamaps-subunit').on('click', function(geography) {
+        	d3.select("#info").select("p").text(geography.properties.name);
+        });
 		},
  
          
@@ -52,4 +56,50 @@ window.onload = function() {
 	        }
  
     });
+
+    /* SLIDER ------------------------------*/
+
+
+	var drag = d3.behavior.drag()
+            .origin(Object)
+            .on("drag", dragMove);
+
+	var svg = d3.select('#slider')
+	                .append('svg')
+	                .attr("height", 200)
+	                .attr("width", 800);
+
+	var g = svg.selectAll('g')
+	            .data([{x: 100, y : 20}])
+	            .enter()
+	                .append('g')
+	                .attr("height", 200)
+	                .attr("widht", 800)
+	                .attr('transform', 'translate(20, 10)');
+
+
+    g.append('rect')
+        .attr('y', 10)
+        .attr("height", 5)
+        .attr("width", 750)
+        .attr('fill', '#C0C0C0');
+
+	g.append("rect")
+	    .attr("height", 20)
+	    .attr("width", 20)
+	    .attr("x", function(d) { return d.x; })
+	    .attr("y", 0)
+	    .attr("fill", "#2394F5")
+	    .call(drag);
+
+	function dragMove(d) {
+	    d3.select(this)
+	        .attr("x", d.x = Math.max(0, Math.min(750, d3.event.x)));
+	}
+
+
+    d3.csv("data/UNdata.csv", function(data) {
+  		console.log(data[0]);
+	});
+
 }
