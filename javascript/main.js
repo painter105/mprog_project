@@ -1,5 +1,7 @@
 // Patrick Schilder
 
+"use strict";
+
 window.onload = function() {
  	var custom_map = new Datamap({
  
@@ -9,8 +11,8 @@ window.onload = function() {
         setProjection: function(element, options) {
 		      var projection, path;
 		      projection = d3.geo.mercator()                          // The d3 projection
-		                     .translate([(450.0), (200.0)])      // And some options
-		                     .scale( 1.6 * 900  / Math.PI)
+		                     .translate([(450.0), (150.0)])      // And some options
+		                     .scale(  900  / Math.PI)
 		                     .center([25, 62]);
 		      path = d3.geo.path()
 		               .projection( projection );
@@ -25,7 +27,7 @@ window.onload = function() {
 		    }
 
 		    datamap.svg.selectAll('.datamaps-subunit').on('click', function(geography) {
-        	d3.select("#info").select("p").text(geography.properties.name);
+        	d3.select("#info").select("h3").text(geography.properties.name);
         });
 		},
  
@@ -64,17 +66,11 @@ window.onload = function() {
             .origin(Object)
             .on("drag", dragMove);
 
-	var svg = d3.select('#slider')
-	                .append('svg')
-	                .attr("height", 200)
-	                .attr("width", 800);
 
-	var g = svg.selectAll('g')
+	var g = d3.select('#slider').select("svg").selectAll('g')
 	            .data([{x: 100, y : 20}])
 	            .enter()
 	                .append('g')
-	                .attr("height", 200)
-	                .attr("widht", 800)
 	                .attr('transform', 'translate(20, 10)');
 
 
@@ -97,9 +93,10 @@ window.onload = function() {
 	        .attr("x", d.x = Math.max(0, Math.min(750, d3.event.x)));
 	}
 
+	/* CSV output */
 
     d3.csv("data/UNdata.csv", function(data) {
-  		console.log(data[0]);
+  		d3.select(".well").text(JSON.stringify(data[0]));
 	});
 
 }
