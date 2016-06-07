@@ -6,6 +6,8 @@ The visualisation should be an interactive map of the whole planet, where moveme
 
 ![](doc/first_sketch.png)
 
+UPDATE: When you click on a country, the info about the country will not be shown in a tooltip, but in a separate panel on the right side.
+
 I will need data on numbers of refugees, where they’re from and where they go to. Sources: UN and similar. If there is irrelevant information, then first filter it out. Store the data as csv or JSON.
 
 Certainly this parts will be needed:
@@ -15,6 +17,6 @@ Certainly this parts will be needed:
   * code that draws flows between different countries (like flight routes from airplanes)
   * code that opens a new window with detailed information and history about a refugee-stream / country together with a visualisation.
 
-To make the visualisation I plan to use d3. If possible (=not too hard), I would like to use a 3D map of the globe. Otherwise I will use a 2D map that connects at the edges and repeats.
+To make the visualisation I plan to use d3. I will use a 2D map where the user can zoom in.
 
 A similar visualisation is, for example [from the UNHCR](http://data.unhcr.org/mediterranean/country.php?id=502) Refugee "flows" are very detailed here. A resanable small area is presented, and the the estimated daily refugee arrivals are shown. I want to visualise the movement of refugees on the whole planet and use yearly numbers and show - apart from the actual happenings - also the historical aspect.

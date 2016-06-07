@@ -8,6 +8,7 @@
   	<meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>Map</title>
+
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
     <link rel="stylesheet" type="text/css" href="css/style.css"/>
 
@@ -20,12 +21,12 @@
 	<!-- DataMaps, local copy -->
 	<script type="text/javascript" src="javascript/datamaps.world.js"></script>
 
+	<!-- BOOTSTRAP -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+	<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
 	<!-- This is your script file, write your functions in main.js -->
 	<script src="javascript/main.js"></script>
-
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
-
-	<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
 	<div id="head"><h1>Movement of Refugees</h1></div>
 	
@@ -34,17 +35,6 @@
 
   <body>
   <div class="container-fluid">
-<!--   <div id="visualisation">
-
-    <div id="mapcontainer" style="position: relative"></div>
-
-    <section id="info">
-      <p>Info</p>
-    </section>
-  	</div>
-
-  	<div id="slider"></div>
-  	-->
 
 
 	  <div class="row">
@@ -60,8 +50,8 @@
 
 		  	<ul class="nav nav-tabs">
 			  <li class="active"><a data-toggle="tab" href="#home">Options</a></li>
-			  <li><a data-toggle="tab" href="#menu1">History</a></li>
-			  <li><a data-toggle="tab" href="#menu2">Origin</a></li>
+			  <li><a data-toggle="tab" href="#history">History</a></li>
+			  <li><a data-toggle="tab" href="#origin">Origin</a></li>
 			</ul>
 
 			<div class="tab-content">
@@ -84,11 +74,13 @@
 
 			  </div>
 
-			  <div id="menu1" class="tab-pane fade">
+			  <div id="history" class="tab-pane fade">
 			    <h4>History</h4>
 			    <p>Graphs with total incomming and outgoing refugees VS time.</p>
+			    <svg id="historyGraph"> </svg>
 			  </div>
-			  <div id="menu2" class="tab-pane fade">
+
+			  <div id="origin" class="tab-pane fade">
 			    <h4>Origin</h4>
 			    <p>Diagram with origin of refugees.</p>
 			  </div>
@@ -106,12 +98,6 @@
 	  	</div>
 	  </div>
 
-	  <div class="row">
-	  	<div class="col-xs-12">
-	  		<div class="well"></div>
-	  	</div>
-	  	
-	  </div>
 
   </div>
 

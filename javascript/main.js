@@ -1,6 +1,8 @@
 // Patrick Schilder
 
 "use strict";
+var csvData = {};
+
 
 window.onload = function() {
  	var custom_map = new Datamap({
@@ -19,16 +21,18 @@ window.onload = function() {
 		      return {path: path, projection: projection};
 		    },
 
-		// Panning and zooming (this functions are from http://stackoverflow.com/questions/26811347/mouse-wheel-zoom-map-datamaps-js)
+
 		done: function(datamap){
+			// Panning and zooming (this 3 lines of code are from http://stackoverflow.com/questions/26811347/mouse-wheel-zoom-map-datamaps-js)
 		    datamap.svg.call(d3.behavior.zoom().on("zoom", redraw));
 		    function redraw() {
 		        datamap.svg.selectAll("g").attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 		    }
 
 		    datamap.svg.selectAll('.datamaps-subunit').on('click', function(geography) {
-        	d3.select("#info").select("h3").text(geography.properties.name);
-        });
+	        	d3.select("#info").select("h3").text(geography.properties.name);
+	        	drawGraph(geography.id);
+	        });
 		},
  
          
@@ -59,7 +63,14 @@ window.onload = function() {
  
     });
 
-    /* SLIDER ------------------------------*/
+    custom_map.arc([
+		{
+			origin: 'AFG',
+			destination: 'IRQ'
+		}
+	], {strokeWidth: 1, arcSharpness: 1.4, strokeColor: '#DD1C77'});
+
+    /* slider ------------------------------*/
 
 
 	var drag = d3.behavior.drag()
@@ -93,10 +104,40 @@ window.onload = function() {
 	        .attr("x", d.x = Math.max(0, Math.min(750, d3.event.x)));
 	}
 
-	/* CSV output */
+	/* read in CSV */
 
-    d3.csv("data/UNdata.csv", function(data) {
-  		d3.select(".well").text(JSON.stringify(data[0]));
+	d3.csv("data/filteredUNdata.csv", function(data) {
+    	var data2 = d3.nest()
+			.key(function(d) { return d.countryOfAsylum})
+			.entries(data);
+
+		data2.forEach(function(d){
+			csvData[d.key] = d.values;
+		});
 	});
 
 }
+
+/* draw graph with total number of refugees per year */
+function drawGraph(countryCode) {
+	var countryData = csvData[countryCode];
+	var data = d3.nest()
+		.key(function(d) { return d.year})
+		.entries(countryData);
+
+	var byYear = {};
+
+	data.forEach(function(d) {
+		byYear[d.key] = d.values;
+	});
+
+	console.log(byYear);
+
+	//  Onderstaande werkt nog niet, hier moet een forEach loop komen die per jaar alle vluchtelingen bij elkaar optelt.
+
+	d3.select("#historyGraph").selectAll("rect")
+		.data(d3.keys(byYear))
+		.enter()
+		.append("rect");
+};
+
