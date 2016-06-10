@@ -1,7 +1,8 @@
 // Patrick Schilder
 
 "use strict";
-var csvData = {};
+var csvData;
+var csvByCountryOfAsylum = {};
 
 
 window.onload = function() {
@@ -63,12 +64,38 @@ window.onload = function() {
  
     });
 
-    custom_map.arc([
-		{
-			origin: 'AFG',
-			destination: 'IRQ'
-		}
-	], {strokeWidth: 1, arcSharpness: 1.4, strokeColor: '#DD1C77'});
+ //    custom_map.arc([
+	// 	{
+	// 		origin: 'AFG',
+	// 		destination: 'IRQ'
+	// 	}
+	// ], {strokeWidth: 1, arcSharpness: 1.4, strokeColor: '#DD1C77'});
+
+
+	/* read in CSV */
+
+	d3.csv("data/filteredUNdata.csv", function(data) {
+		csvData = data;
+
+    	var data2 = d3.nest()
+			.key(function(d) { return d.countryOfAsylum})
+			.entries(data);
+
+		data2.forEach(function(d){
+			csvByCountryOfAsylum[d.key] = d.values;
+		});
+		drawArcs();
+	});
+
+	function drawArcs() {
+		var plotArray = [];
+		csvData.forEach(function(d){
+			plotArray.push({origin: d.countryOfOrigin, destination: d.countryOfAsylum})
+		});
+		custom_map.arc(plotArray);
+	};
+		
+
 
     /* slider ------------------------------*/
 
@@ -104,23 +131,17 @@ window.onload = function() {
 	        .attr("x", d.x = Math.max(0, Math.min(750, d3.event.x)));
 	}
 
-	/* read in CSV */
-
-	d3.csv("data/filteredUNdata.csv", function(data) {
-    	var data2 = d3.nest()
-			.key(function(d) { return d.countryOfAsylum})
-			.entries(data);
-
-		data2.forEach(function(d){
-			csvData[d.key] = d.values;
-		});
-	});
 
 }
 
 /* draw graph with total number of refugees per year */
 function drawGraph(countryCode) {
-	var countryData = csvData[countryCode];
+
+	var countryData = csvByCountryOfAsylum[countryCode];
+	if (countryData == undefined) {
+		countryData = [];
+	};
+
 	var data = d3.nest()
 		.key(function(d) { return d.year})
 		.entries(countryData);
@@ -131,13 +152,97 @@ function drawGraph(countryCode) {
 		byYear[d.key] = d.values;
 	});
 
-	console.log(byYear);
+	//console.log(byYear);
 
-	//  Onderstaande werkt nog niet, hier moet een forEach loop komen die per jaar alle vluchtelingen bij elkaar optelt.
+	var graphData = [];
+	
+	for (var year in byYear) {
+		var refugeeSum = 0;
+		byYear[year].forEach( function(entry){
+			refugeeSum += +entry.refugees;
+		});
+		
+		graphData.push({"year":+year, "refugees":refugeeSum});
+	};
 
-	d3.select("#historyGraph").selectAll("rect")
-		.data(d3.keys(byYear))
-		.enter()
-		.append("rect");
+	//console.log(graphData);
+	// -------------- //;
+
+	var margin = {top: 20, right: 20, bottom: 30, left: 40},
+    width = 400 - margin.left - margin.right,
+    height = 200 - margin.top - margin.bottom;
+
+	var x = d3.scale.linear()
+	    .range([0, width]);
+
+	var y = d3.scale.linear()
+	    .range([height, 0]);
+
+	var xAxis = d3.svg.axis()
+	    .scale(x)
+	    .orient("bottom")
+	    .tickValues([1975, 1980, 1985, 1990, 1995, 2000, 2005, 2010]);
+
+	var yAxis = d3.svg.axis()
+	    .scale(y)
+	    .orient("left");
+
+	var graph = d3.select("#historyGraph")
+		.attr("width", width + margin.left + margin.right)
+	    .attr("height", height + margin.top + margin.bottom)
+	    	.select("g")
+	    	.attr("transform", 
+	        	"translate(" + margin.left + "," + margin.top + ")");
+
+	x.domain(d3.extent(graphData,function(d) { return d.year; }));
+	y.domain(d3.extent(graphData, function(d) { return d.refugees; }));
+
+	// Remove existing axes (the bars are not stored in g elements, but axes are)
+	graph.selectAll("g.axis").remove()
+
+	graph.append("g")
+	  .attr("class", "x axis")
+	  .attr("transform", "translate(0," + height + ")")
+	  .call(xAxis)
+	.selectAll("text")
+	  .style("text-anchor", "end")
+	  .attr("dx", "-.8em")
+	  .attr("dy", "-.55em")
+	  .attr("transform", "rotate(-90)" );
+
+	graph.append("g")
+	  .attr("class", "y axis")
+	  .call(yAxis)
+	.append("text")
+	  .attr("transform", "rotate(-90)")
+	  .attr("y", 6)
+	  .attr("dy", ".71em")
+	  .style("text-anchor", "end")
+	  .text("# refugees");
+
+
+	var bars = graph.selectAll("rect")
+		.data(graphData);
+
+	bars.exit()
+	    .transition()
+	      .duration(300)
+	    .attr("y", y(0))
+	    .attr("height", height - y(0))
+	    .style('fill-opacity', 1e-6)
+	    .remove();
+
+	bars.enter()
+		.append("rect")
+	    .attr("class", "bar")
+	    .attr("y", 0)
+		.attr("height", height);
+
+	bars.transition().duration(300)
+		.attr("x", function(d) { return x(d.year); })
+		.attr("width", "8px")
+		.attr("y", function(d) { return y(d.refugees); })
+		.attr("height", function(d) { return height - y(d.refugees); });
+
 };
 

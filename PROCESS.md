@@ -18,3 +18,12 @@ Preparing data: looking how the data deals with changed / new countries ; transl
 
 # Day 7
 started typing function to draw graph of total incoming refugees: first ordering data (by country; by year). Looked up how to draw arcs on the map (seems pretty easy because it is possible to do that by countrycode).
+
+# Day 8
+Did less then planned; worked on graph of total incomming refugees(removing old data; transitions)
+
+# Day 9
+Not available...
+
+# Day 10
+For the first time plotted all the arcs and.... discovered it is really slow (and arcs cover countries) Rest of the day: presentation
