@@ -90,9 +90,11 @@ window.onload = function() {
 	function drawArcs() {
 		var plotArray = [];
 		csvData.forEach(function(d){
-			plotArray.push({origin: d.countryOfOrigin, destination: d.countryOfAsylum})
+			if (d.year == 1976) {
+				plotArray.push({origin: d.countryOfOrigin, destination: d.countryOfAsylum})
+			}
 		});
-		custom_map.arc(plotArray);
+		custom_map.arc(plotArray, {strokeWidth: 0.05, arcSharpness: 1.4, strokeColor: '#DD1C77'});
 	};
 		
 
@@ -100,39 +102,10 @@ window.onload = function() {
     /* slider ------------------------------*/
 
 
-	var drag = d3.behavior.drag()
-            .origin(Object)
-            .on("drag", dragMove);
+   d3.select("#slider").on("change", function(){console.log(this.value)});
 
 
-	var g = d3.select('#slider').select("svg").selectAll('g')
-	            .data([{x: 100, y : 20}])
-	            .enter()
-	                .append('g')
-	                .attr('transform', 'translate(20, 10)');
-
-
-    g.append('rect')
-        .attr('y', 10)
-        .attr("height", 5)
-        .attr("width", 750)
-        .attr('fill', '#C0C0C0');
-
-	g.append("rect")
-	    .attr("height", 20)
-	    .attr("width", 20)
-	    .attr("x", function(d) { return d.x; })
-	    .attr("y", 0)
-	    .attr("fill", "#2394F5")
-	    .call(drag);
-
-	function dragMove(d) {
-	    d3.select(this)
-	        .attr("x", d.x = Math.max(0, Math.min(750, d3.event.x)));
-	}
-
-
-}
+} /* end of window.onload */
 
 /* draw graph with total number of refugees per year */
 function drawGraph(countryCode) {
