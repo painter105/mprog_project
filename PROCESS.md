@@ -27,3 +27,10 @@ Not available...
 
 # Day 10
 For the first time plotted all the arcs and.... discovered it is really slow (and arcs cover countries) Rest of the day: presentation
+
+# Weekend
+Change silder from hand-made d3 slider to html "range"
+
+#Day 11
+
+Data for map is processed with d3.nest by year. Arcs are only plotted if more than x refugees. Assigned a place (currently in the ocean) for refugees to/from "various"/"stateless" and assigned coordinates for Tibet.  Fixed all the issues with the history graph (axes).

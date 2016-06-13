@@ -1,20 +1,23 @@
 // Patrick Schilder
 
 "use strict";
+
 var csvData;
 var csvByCountryOfAsylum = {};
+var csvByCountryOfOrigin = {};
+var csvByYear = {};
 
 
 window.onload = function() {
  	var custom_map = new Datamap({
  
-        // Set the element to draw the new map in.
+        // set the element to draw the new map in
         element: document.getElementById("mapcontainer"),
 
         setProjection: function(element, options) {
 		      var projection, path;
-		      projection = d3.geo.mercator()                          // The d3 projection
-		                     .translate([(450.0), (150.0)])      // And some options
+		      projection = d3.geo.mercator()                          // the d3 projection
+		                     .translate([(450.0), (150.0)])      // and some options
 		                     .scale(  900  / Math.PI)
 		                     .center([25, 62]);
 		      path = d3.geo.path()
@@ -24,7 +27,7 @@ window.onload = function() {
 
 
 		done: function(datamap){
-			// Panning and zooming (this 3 lines of code are from http://stackoverflow.com/questions/26811347/mouse-wheel-zoom-map-datamaps-js)
+			// panning and zooming (this 3 lines of code are from http://stackoverflow.com/questions/26811347/mouse-wheel-zoom-map-datamaps-js)
 		    datamap.svg.call(d3.behavior.zoom().on("zoom", redraw));
 		    function redraw() {
 		        datamap.svg.selectAll("g").attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
@@ -37,22 +40,22 @@ window.onload = function() {
 		},
  
          
-        // Customize the map.
+        // customize the map
         geographyConfig: {
  
-            // Set smaller, brighter borders.
+            // set smaller, brighter borders
             borderColor: "blue",
             borderWidth: 0.3,
  
-            // Set a less ridiculous highlight color.
+            // set a less ridiculous highlight color
             highlightFillColor: "yellow",
  
-            // Let the borders be highlighted too.
+            // let the borders be highlighted too
             highlightBorderColor: "red",
             highlightBorderWidth: 0.3,
 
-            // Popup tooltip settings.
-	        popupOnHover: true,         // false will disable the tooltips.
+            // popup tooltip settings
+	        popupOnHover: true,         // false will disable the tooltips
 	        popupTemplate: function(geo) {
 
 	        	var tag = '<strong>' + geo.properties.name + '</strong>';
@@ -64,12 +67,6 @@ window.onload = function() {
  
     });
 
- //    custom_map.arc([
-	// 	{
-	// 		origin: 'AFG',
-	// 		destination: 'IRQ'
-	// 	}
-	// ], {strokeWidth: 1, arcSharpness: 1.4, strokeColor: '#DD1C77'});
 
 
 	/* read in CSV */
@@ -84,28 +81,65 @@ window.onload = function() {
 		data2.forEach(function(d){
 			csvByCountryOfAsylum[d.key] = d.values;
 		});
-		drawArcs();
+		// -----------------------------------------------
+		var data3 = d3.nest()
+			.key(function(d) { return d.year})
+			.entries(data);
+
+		data3.forEach(function(d){
+			csvByYear[d.key] = d.values;
+		});
+		// -----------------------------------------------
+
+		var data4 = d3.nest()
+			.key(function(d) { return d.countryOfOrigin})
+			.entries(data);
+
+		data4.forEach(function(d){
+			csvByCountryOfOrigin[d.key] = d.values;
+		});
+		// -----------------------------------------------
+		drawArcs(1975);
 	});
 
-	function drawArcs() {
-		var plotArray = [];
-		csvData.forEach(function(d){
-			if (d.year == 1976) {
-				plotArray.push({origin: d.countryOfOrigin, destination: d.countryOfAsylum})
-			}
-		});
-		custom_map.arc(plotArray, {strokeWidth: 0.05, arcSharpness: 1.4, strokeColor: '#DD1C77'});
-	};
-		
-
-
+	
     /* slider ------------------------------*/
 
+	d3.select("#slider").on("change", function() {drawArcs(this.value);});
 
-   d3.select("#slider").on("change", function(){console.log(this.value)});
+	/* draw arcs on the map */
+	function drawArcs(year) {
+		//d3.selectAll(".datamaps-arc").remove();
+		var plotArray = [];
+		csvByYear[year].forEach(function(d){
+			if (d.refugees > 10000) {
+				//console.log(d.countryOfOrigin);
+				if (d.countryOfOrigin == "Various" || d.countryOfOrigin == "Stateless") {
+					plotArray.push({origin: {latitude: 49.553725, longitude: -31.684570}, destination: d.countryOfAsylum})
+				}
+				if (d.countryOfAsylum == "Various" || d.countryOfAsylum == "Stateless") {
+					plotArray.push({origin: d.countryOfOrigin , destination: {latitude: 49.553725, longitude: -31.684570}})
+				}
+				if (d.countryOfOrigin == "Tibetans") {
+					plotArray.push({origin: {latitude: 29.647535, longitude: 91.117525}, destination: d.countryOfAsylum})
+				}
+				else {
+					plotArray.push({origin: d.countryOfOrigin, destination: d.countryOfAsylum})
+				}
+			};
+		});
+
+
+		custom_map.arc(plotArray, {strokeWidth: 0.5, arcSharpness: 1.4, strokeColor: '#DD1C77'});
+	};
 
 
 } /* end of window.onload */
+
+
+
+
+
 
 /* draw graph with total number of refugees per year */
 function drawGraph(countryCode) {
@@ -125,8 +159,7 @@ function drawGraph(countryCode) {
 		byYear[d.key] = d.values;
 	});
 
-	//console.log(byYear);
-
+	// count the refugees
 	var graphData = [];
 	
 	for (var year in byYear) {
@@ -138,10 +171,9 @@ function drawGraph(countryCode) {
 		graphData.push({"year":+year, "refugees":refugeeSum});
 	};
 
-	//console.log(graphData);
 	// -------------- //;
 
-	var margin = {top: 20, right: 20, bottom: 30, left: 40},
+	var margin = {top: 20, right: 20, bottom: 35, left: 55},
     width = 400 - margin.left - margin.right,
     height = 200 - margin.top - margin.bottom;
 
@@ -154,7 +186,8 @@ function drawGraph(countryCode) {
 	var xAxis = d3.svg.axis()
 	    .scale(x)
 	    .orient("bottom")
-	    .tickValues([1975, 1980, 1985, 1990, 1995, 2000, 2005, 2010]);
+	    .tickValues([1975, 1980, 1985, 1990, 1995, 2000, 2005, 2010, 2013])
+	    .tickFormat(d3.format("0000"));
 
 	var yAxis = d3.svg.axis()
 	    .scale(y)
@@ -167,12 +200,13 @@ function drawGraph(countryCode) {
 	    	.attr("transform", 
 	        	"translate(" + margin.left + "," + margin.top + ")");
 
-	x.domain(d3.extent(graphData,function(d) { return d.year; }));
+	x.domain([1974,2014]);
 	y.domain(d3.extent(graphData, function(d) { return d.refugees; }));
 
-	// Remove existing axes (the bars are not stored in g elements, but axes are)
+	// remove existing axes
 	graph.selectAll("g.axis").remove()
 
+	// add new axes
 	graph.append("g")
 	  .attr("class", "x axis")
 	  .attr("transform", "translate(0," + height + ")")
@@ -194,14 +228,15 @@ function drawGraph(countryCode) {
 	  .text("# refugees");
 
 
+	// draw & update bars
 	var bars = graph.selectAll("rect")
 		.data(graphData);
 
 	bars.exit()
 	    .transition()
-	      .duration(300)
-	    .attr("y", y(0))
-	    .attr("height", height - y(0))
+	    .duration(300)
+	    .attr("y", 0)
+	    .attr("height", height)
 	    .style('fill-opacity', 1e-6)
 	    .remove();
 
@@ -213,7 +248,7 @@ function drawGraph(countryCode) {
 
 	bars.transition().duration(300)
 		.attr("x", function(d) { return x(d.year); })
-		.attr("width", "8px")
+		.attr("width", "6px")
 		.attr("y", function(d) { return y(d.refugees); })
 		.attr("height", function(d) { return height - y(d.refugees); });
 

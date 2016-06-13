@@ -17,17 +17,21 @@ for line in codes:
 
 for line in undata:
     line = line.split(",")
+
+    if line[0] == '\n':
+        print "Done"
+        break
+
     try:
-        line[0] = ccdict[line[0][1:-1] ]
+        line[0] = ccdict[line[0][1:-1] ]        
+    except:
+            pass
+
+    try:
         line[1] = ccdict[line[1][1:-1] ]
     except:
-        if line[1] in ['"Various"', '"Stateless"']:
-            continue
-        if line[0] == '"Various"':
-            continue
-        if line[0] == '"fnSeqID"': #einde van de datafile
-            break
+        pass
 
-        print line[0],line[1]
+    #print line[0],line[1]
 
     output.write( line[0] + ',' + line[1] + ',' + line [2][1:-1] + ',' + line [5][1:-1] + '\n' ) # [1:-1}] is om de "" haakjes weg te halen.
