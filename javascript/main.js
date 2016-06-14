@@ -35,7 +35,10 @@ window.onload = function() {
 
 		    datamap.svg.selectAll('.datamaps-subunit').on('click', function(geography) {
 	        	d3.select("#info").select("h3").text(geography.properties.name);
-	        	drawGraph(geography.id);
+	        	drawGraph(geography.id, 'in');
+	        	drawGraph(geography.id, 'out');
+	        	drawDonut(geography.id, 'in');
+	        	//drawDonut(geography.id, 'out');
 	        });
 		},
  
@@ -112,7 +115,7 @@ window.onload = function() {
 		//d3.selectAll(".datamaps-arc").remove();
 		var plotArray = [];
 		csvByYear[year].forEach(function(d){
-			if (d.refugees > 10000) {
+			if (d.refugees > 100) {
 				//console.log(d.countryOfOrigin);
 				if (d.countryOfOrigin == "Various" || d.countryOfOrigin == "Stateless") {
 					plotArray.push({origin: {latitude: 49.553725, longitude: -31.684570}, destination: d.countryOfAsylum})
@@ -130,7 +133,7 @@ window.onload = function() {
 		});
 
 
-		custom_map.arc(plotArray, {strokeWidth: 0.5, arcSharpness: 1.4, strokeColor: '#DD1C77'});
+		custom_map.arc(plotArray, {strokeWidth: 0.03, arcSharpness: 1.4, strokeColor: '#DD1C77'});
 	};
 
 
@@ -142,20 +145,30 @@ window.onload = function() {
 
 
 /* draw graph with total number of refugees per year */
-function drawGraph(countryCode) {
+function drawGraph(countryCode, option) {
 
-	var countryData = csvByCountryOfAsylum[countryCode];
+	if (option == 'in') {
+		var countryData = csvByCountryOfAsylum[countryCode];
+		var id = "#historyIn";
+		var fillColor = "red";
+	}
+	else if (option == 'out') {
+		var countryData = csvByCountryOfOrigin[countryCode];
+		var id = "#historyOut";
+		var fillColor = "green";
+	};
+
 	if (countryData == undefined) {
 		countryData = [];
 	};
 
-	var data = d3.nest()
+	var data1 = d3.nest()
 		.key(function(d) { return d.year})
 		.entries(countryData);
 
 	var byYear = {};
 
-	data.forEach(function(d) {
+	data1.forEach(function(d) {
 		byYear[d.key] = d.values;
 	});
 
@@ -173,7 +186,7 @@ function drawGraph(countryCode) {
 
 	// -------------- //;
 
-	var margin = {top: 20, right: 20, bottom: 35, left: 55},
+	var margin = {top: 10, right: 15, bottom: 35, left: 60},
     width = 400 - margin.left - margin.right,
     height = 200 - margin.top - margin.bottom;
 
@@ -193,7 +206,7 @@ function drawGraph(countryCode) {
 	    .scale(y)
 	    .orient("left");
 
-	var graph = d3.select("#historyGraph")
+	var graph = d3.select(id) // id depends on the kind of graph (incomming/outgoing)
 		.attr("width", width + margin.left + margin.right)
 	    .attr("height", height + margin.top + margin.bottom)
 	    	.select("g")
@@ -201,7 +214,7 @@ function drawGraph(countryCode) {
 	        	"translate(" + margin.left + "," + margin.top + ")");
 
 	x.domain([1974,2014]);
-	y.domain(d3.extent(graphData, function(d) { return d.refugees; }));
+	y.domain([0,d3.max(graphData, function(d) { return d.refugees; }) ]);
 
 	// remove existing axes
 	graph.selectAll("g.axis").remove()
@@ -220,12 +233,12 @@ function drawGraph(countryCode) {
 	graph.append("g")
 	  .attr("class", "y axis")
 	  .call(yAxis)
-	.append("text")
-	  .attr("transform", "rotate(-90)")
-	  .attr("y", 6)
-	  .attr("dy", ".71em")
-	  .style("text-anchor", "end")
-	  .text("# refugees");
+	  .append("text")
+		.attr("transform", "rotate(-90)")
+		.attr("y", 6)
+		.attr("dy", ".71em")
+		.style("text-anchor", "end")
+		.text("# refugees");
 
 
 	// draw & update bars
@@ -242,9 +255,10 @@ function drawGraph(countryCode) {
 
 	bars.enter()
 		.append("rect")
-	    .attr("class", "bar")
-	    .attr("y", 0)
-		.attr("height", height);
+		    .attr("class", "bar")
+		    .attr("y", 0)
+			.attr("height", height)
+			.attr("fill", fillColor);
 
 	bars.transition().duration(300)
 		.attr("x", function(d) { return x(d.year); })
@@ -254,3 +268,57 @@ function drawGraph(countryCode) {
 
 };
 
+// -- Donut Pie Chart ---------------------------------
+// from: https://bl.ocks.org/mbostock/3887193
+
+function drawDonut(countryCode, option) {
+
+	var countryData = csvByCountryOfAsylum[countryCode];
+
+	// count the refugees
+	var pieData = [];
+	
+	countryData.forEach(function(d) {
+		if (d.year == 1975) {
+			pieData.push({"country": d.countryOfOrigin , "refugees": +d.refugees});
+		};
+	});
+
+
+	var width = 400,
+	    height = 200,
+	    radius = Math.min(width, height) / 2;
+
+	var color = d3.scale.ordinal()
+	    .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+
+	var arc = d3.svg.arc()
+	    .outerRadius(radius - 5)
+	    .innerRadius(radius - 50);
+
+	var pie = d3.layout.pie()
+	    .sort(null)
+	    .value(function(d) { return d.refugees; });
+
+	var svg = d3.select("#donut")
+	    .attr("width", width)
+	    .attr("height", height)
+		.select("g")
+	    	.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+	var g = svg.selectAll(".arc")
+		.data(pie(pieData))
+    	.enter()
+    	.append("g")
+			.attr("class", "arc");
+
+	g.append("path")
+		.attr("d", arc)
+		.style("fill", function(d) { return color(d.data.country); });
+
+	g.append("text")
+		.attr("class", "pieText")
+		.attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
+		.attr("dy", ".35em")
+		.text(function(d) { return d.data.country; });
+};
