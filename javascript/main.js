@@ -149,13 +149,11 @@ function drawGraph(countryCode, option) {
 
 	if (option == 'in') {
 		var countryData = csvByCountryOfAsylum[countryCode];
-		var id = "#historyIn";
-		var fillColor = "red";
+		var id = "historyIn";
 	}
 	else if (option == 'out') {
 		var countryData = csvByCountryOfOrigin[countryCode];
-		var id = "#historyOut";
-		var fillColor = "green";
+		var id = "historyOut";
 	};
 
 	if (countryData == undefined) {
@@ -206,7 +204,7 @@ function drawGraph(countryCode, option) {
 	    .scale(y)
 	    .orient("left");
 
-	var graph = d3.select(id) // id depends on the kind of graph (incomming/outgoing)
+	var graph = d3.select("#"+id) // id depends on the kind of graph (incomming/outgoing)
 		.attr("width", width + margin.left + margin.right)
 	    .attr("height", height + margin.top + margin.bottom)
 	    	.select("g")
@@ -255,10 +253,9 @@ function drawGraph(countryCode, option) {
 
 	bars.enter()
 		.append("rect")
-		    .attr("class", "bar")
+		    .attr("class", "bar" + " " + id)
 		    .attr("y", 0)
-			.attr("height", height)
-			.attr("fill", fillColor);
+			.attr("height", height);
 
 	bars.transition().duration(300)
 		.attr("x", function(d) { return x(d.year); })

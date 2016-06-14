@@ -16,16 +16,37 @@ body {
 	position: relative;
 }
 
+
+/* Graph */
+.historyIn {
+	fill: red;
+}
+
+.historyOut {
+	fill: green;
+}
+
+.bar:hover {
+  fill: brown;
+}
+
 .axis {
-   font: 10px sans-serif;
- }
+  font: 10px sans-serif;
+}
 
- .axis path, .axis line {
-   fill: none;
-   stroke: #000;
-   shape-rendering: crispEdges;
- }
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
 
+.x.axis path {
+  display: none;
+}
+
+
+/* pie chart */
  .arc text {
   font: 10px sans-serif;
   text-anchor: middle;
@@ -34,4 +55,12 @@ body {
 .arc path {
   stroke: #fff;
 }
+
+
+
+
+
+
+
+
 
