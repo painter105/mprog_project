@@ -115,7 +115,7 @@ window.onload = function() {
 		//d3.selectAll(".datamaps-arc").remove();
 		var plotArray = [];
 		csvByYear[year].forEach(function(d){
-			if (d.refugees > 100) {
+			if (d.refugees > 1000) {
 				//console.log(d.countryOfOrigin);
 				if (d.countryOfOrigin == "Various" || d.countryOfOrigin == "Stateless") {
 					plotArray.push({origin: {latitude: 49.553725, longitude: -31.684570}, destination: d.countryOfAsylum})
@@ -127,13 +127,13 @@ window.onload = function() {
 					plotArray.push({origin: {latitude: 29.647535, longitude: 91.117525}, destination: d.countryOfAsylum})
 				}
 				else {
-					plotArray.push({origin: d.countryOfOrigin, destination: d.countryOfAsylum})
+					plotArray.push({origin: d.countryOfOrigin, destination: d.countryOfAsylum, strokeWidth: 0.25})
 				}
 			};
 		});
 
 
-		custom_map.arc(plotArray, {strokeWidth: 0.03, arcSharpness: 1.4, strokeColor: '#DD1C77'});
+		custom_map.arc(plotArray);//, {strokeWidth: 0.1}, arcSharpness: 0.5, strokeColor: '#DD1C77'});
 	};
 
 
@@ -304,10 +304,16 @@ function drawDonut(countryCode, option) {
 	    	.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
 	var g = svg.selectAll(".arc")
-		.data(pie(pieData))
-    	.enter()
-    	.append("g")
-			.attr("class", "arc");
+		.data(pie(pieData));
+
+	g.exit()
+		.transition()
+		.duration(300)
+		.remove();
+
+    g.enter()
+    		.append("g")
+				.attr("class", "arc");
 
 	g.append("path")
 		.attr("d", arc)
@@ -318,4 +324,6 @@ function drawDonut(countryCode, option) {
 		.attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
 		.attr("dy", ".35em")
 		.text(function(d) { return d.data.country; });
+
+
 };
