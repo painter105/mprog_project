@@ -4,28 +4,26 @@
 <html>
   <head>
   	<meta charset="utf-8" />
-  	<!-- To ensure proper rendering and touch zooming - bootstrap -->
-  	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Refugee map</title>
-
-    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
-    <link rel="stylesheet" type="text/css" href="css/style.css"/>
-
-    <!-- Data Driven Documents (D3) -->
-	<script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
-
-	<!-- TopoJSON -->
-	<script type="text/javascript" src="http://d3js.org/topojson.v1.min.js"></script>
-
-	<!-- DataMaps, local copy -->
-	<script type="text/javascript" src="javascript/datamaps.world.js"></script>
-
-	<!-- BOOTSTRAP -->
+  	<title>Refugee map</title>
+  	
+  	<!-- BOOTSTRAP -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
 	<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
-	<script src="javascript/main.js"></script>
+    <!-- my own stylesheet -->
+    <link rel="stylesheet" type="text/css" href="css/style.css"/>
+
+    <!-- Data Driven Documents (D3) & Datamaps-->
+	<script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+	<script type="text/javascript" src="http://d3js.org/topojson.v1.min.js"></script>
+	<script type="text/javascript" src="javascript/datamaps.world.js"></script>
+
+	<!-- my own scripts -->
+	<script type="text/javascript" src="javascript/donut.js"></script>
+	<script type="text/javascript" src="javascript/main.js"></script>
 
 	<div id="head"><h1>Movement of Refugees</h1></div>
 	
@@ -83,8 +81,8 @@
 
 			  <div id="origin" class="tab-pane fade">
 			    <h4>Origin</h4>
-			    <p>Origin of refugees.</p>
-			    <svg id="donut"> <g> </g> </svg>
+			    <svg id="donut1"> <g> </g> </svg>
+			    <svg id="donut2"> <g> </g> </svg>
 			  </div>
 			</div>
 

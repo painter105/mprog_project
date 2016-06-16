@@ -2,7 +2,6 @@
 
 "use strict";
 
-var csvData;
 var csvByCountryOfAsylum = {};
 var csvByCountryOfOrigin = {};
 var csvByYear = {};
@@ -37,8 +36,7 @@ window.onload = function() {
 	        	d3.select("#info").select("h3").text(geography.properties.name);
 	        	drawGraph(geography.id, 'in');
 	        	drawGraph(geography.id, 'out');
-	        	drawDonut(geography.id, 'in');
-	        	//drawDonut(geography.id, 'out');
+	        	drawDonut(geography.id);
 	        });
 		},
  
@@ -75,7 +73,6 @@ window.onload = function() {
 	/* read in CSV */
 
 	d3.csv("data/filteredUNdata.csv", function(data) {
-		csvData = data;
 
     	var data2 = d3.nest()
 			.key(function(d) { return d.countryOfAsylum})
@@ -113,21 +110,26 @@ window.onload = function() {
 	/* draw arcs on the map */
 	function drawArcs(year) {
 		//d3.selectAll(".datamaps-arc").remove();
+
+		function thickness(amount) {
+			return (amount/3272290) * 3 + 0.05
+		}
+
 		var plotArray = [];
 		csvByYear[year].forEach(function(d){
 			if (d.refugees > 1000) {
 				//console.log(d.countryOfOrigin);
 				if (d.countryOfOrigin == "Various" || d.countryOfOrigin == "Stateless") {
-					plotArray.push({origin: {latitude: 49.553725, longitude: -31.684570}, destination: d.countryOfAsylum})
+					plotArray.push({origin: {latitude: 49.553725, longitude: -31.684570}, destination: d.countryOfAsylum, strokeWidth: thickness(d.refugees)})
 				}
 				if (d.countryOfAsylum == "Various" || d.countryOfAsylum == "Stateless") {
-					plotArray.push({origin: d.countryOfOrigin , destination: {latitude: 49.553725, longitude: -31.684570}})
+					plotArray.push({origin: d.countryOfOrigin , destination: {latitude: 49.553725, longitude: -31.684570}, strokeWidth: thickness(d.refugees)})
 				}
 				if (d.countryOfOrigin == "Tibetans") {
-					plotArray.push({origin: {latitude: 29.647535, longitude: 91.117525}, destination: d.countryOfAsylum})
+					plotArray.push({origin: {latitude: 29.647535, longitude: 91.117525}, destination: d.countryOfAsylum, strokeWidth: thickness(d.refugees)})
 				}
 				else {
-					plotArray.push({origin: d.countryOfOrigin, destination: d.countryOfAsylum, strokeWidth: 0.25})
+					plotArray.push({origin: d.countryOfOrigin, destination: d.countryOfAsylum, strokeWidth: thickness(d.refugees)})
 				}
 			};
 		});
@@ -138,73 +140,89 @@ window.onload = function() {
 
 // donut init
 
-var width = 400,
-    height = 200,
-	radius = Math.min(width, height) / 2;
+function makeDonut(id) {
+	var width = 400,
+	    height = 180,
+		radius = Math.min(width, height) / 2;
 
-var svg = d3.select("#donut")
-	.attr("width", width)
-	.attr("height", height)
-	.select("g");
+	var svg = d3.select(id)
+		.attr("width", width)
+		.attr("height", height)
+		.select("g");
 
-svg.append("g")
-	.attr("class", "slices");
-svg.append("g")
-	.attr("class", "labels");
-svg.append("g")
-	.attr("class", "lines");
+	svg.append("g")
+		.attr("class", "slices");
+	svg.append("g")
+		.attr("class", "labels");
+	svg.append("g")
+		.attr("class", "lines");
 
-var pie = d3.layout.pie()
-	.sort(null)
-	.value(function(d) {
-		return d.value;
-	});
+	svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-var arc = d3.svg.arc()
-	.outerRadius(radius * 0.8)
-	.innerRadius(radius * 0.4);
+	return svg;
 
-var outerArc = d3.svg.arc()
-	.innerRadius(radius * 0.9)
-	.outerRadius(radius * 0.9);
-
-svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-
-var key = function(d){ return d.data.label; };
-
-var color = d3.scale.ordinal()
-	.range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
-
-function randomData (){
-	var labels = color.domain();
-	return labels.map(function(label){
-		return { label: label, value: Math.random() }
-	});
 };
 
 // -- Donut Pie Chart ---------------------------------
 // from: http://bl.ocks.org/dbuezas/9306799
 
-function drawDonut(countryCode, option) {
+var donut1 = makeDonut("#donut1");
+var donut2 = makeDonut("#donut2");
 
-	var countryData = csvByCountryOfAsylum[countryCode];
+function drawDonut(countryCode) {
+
+	var countryData1 = csvByCountryOfAsylum[countryCode];
 
 	// count the refugees
-	var pieData = [];
+	var pieData1 = [];
 	
-	countryData.forEach(function(d) {
-		if (d.year == 1975) {
-			pieData.push({label: d.countryOfOrigin , value: +d.refugees});
+	countryData1.forEach(function(d) {
+		if (d.year == 2013) {
+			pieData1.push({label: d.countryOfOrigin , value: +d.refugees});
 		};
 	});
 
-	change(pieData);
+	change(donut1,pieData1);
+
+	var countryData2 = csvByCountryOfOrigin[countryCode];
+
+	// count the refugees
+	var pieData2 = [];
+	
+	countryData2.forEach(function(d) {
+		if (d.year == 2013) {
+			pieData2.push({label: d.countryOfAsylum , value: +d.refugees});
+		};
+	});
+
+	change(donut2,pieData2);
+
 
 }; /* end of drawDonut */
 
-function change(data) {
-	var svg = d3.select("#donut")
-		.select("g");
+function change(svg, data) {
+
+	var width = 400,
+	    height = 180,
+		radius = Math.min(width, height) / 2;
+
+	var pie = d3.layout.pie()
+		.value(function(d) {
+			return d.value;
+		});
+
+	var arc = d3.svg.arc()
+		.outerRadius(radius * 0.8)
+		.innerRadius(radius * 0.4);
+
+	var outerArc = d3.svg.arc()
+		.innerRadius(radius * 0.9)
+		.outerRadius(radius * 0.9);
+
+	var key = function(d){ return d.data.label; };
+
+	var color = d3.scale.category20c();
+
 	/* ------- PIE SLICES -------*/
 	var slice = svg.select(".slices").selectAll("path.slice")
 		.data(pie(data), key);
@@ -294,11 +312,10 @@ function change(data) {
 		.remove();
 }; 
 
+
+
+
 }; /* end of window.onload */
-
-
-
-
 
 
 /* draw graph with total number of refugees per year */

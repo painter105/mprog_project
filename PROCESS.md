@@ -36,4 +36,12 @@ Data for map is processed with d3.nest by year. Arcs are only plotted if more th
 
 # Day 12
 Added second graph for outgoing refugees and changed colors for each graph.
-Started working on pie chart. End of the day: pie chart working (but not updating)
+Started working on pie chart / donut. End of the day: pie chart working (but not updating)
+
+# Day 13
+Tried to let the pie chart update. But because of the text on the slices, it seems inpossible :(
+Started over again, and this time used an example from internet which already has text labels and also has and update function.
+
+# Day 14
+Because the solution for the pie chart yesterday has a part to "initialise" and a part to update (which needs to reach the variables from the init part), I tried to make a class for the pie chart, but D3 doesn't like it, so it is not possible.
+In the end I made a function for the init part, which returns the SVG element, which then is stored in a variable, so the update function can use that. End of the day: 2 pie charts (->donut) working. (Only text from small slices overlaps)>
