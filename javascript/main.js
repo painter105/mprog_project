@@ -104,8 +104,12 @@ window.onload = function() {
 
 	
     /* slider ------------------------------*/
-
-	d3.select("#slider").on("change", function() {drawArcs(this.value);});
+    d3.select("#slider").call(d3.slider()
+    	.axis(true)
+    	.min(1975)
+    	.max(2013)
+    	.step(1)
+    	.on("slide", function(evt, value) {drawArcs(value);}));
 
 	/* draw arcs on the map */
 	function drawArcs(year) {

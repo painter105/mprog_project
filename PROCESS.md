@@ -44,4 +44,7 @@ Started over again, and this time used an example from internet which already ha
 
 # Day 14
 Because the solution for the pie chart yesterday has a part to "initialise" and a part to update (which needs to reach the variables from the init part), I tried to make a class for the pie chart, but D3 doesn't like it, so it is not possible.
-In the end I made a function for the init part, which returns the SVG element, which then is stored in a variable, so the update function can use that. End of the day: 2 pie charts (->donut) working. (Only text from small slices overlaps)>
+In the end I made a function for the init part, which returns the SVG element, which then is stored in a variable, so the update function can use that. End of the day: 2 pie charts (->donut) working. (Only text from small slices overlaps)
+
+# Daty 15
+Changed slider to d3.slider.
