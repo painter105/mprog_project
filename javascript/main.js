@@ -6,6 +6,9 @@ var csvByCountryOfAsylum = {};
 var csvByCountryOfOrigin = {};
 var csvByYear = {};
 
+var sliderYear = 1975;
+var clickedCountry = "Various";
+
 
 window.onload = function() {
  	var custom_map = new Datamap({
@@ -36,7 +39,8 @@ window.onload = function() {
 	        	d3.select("#info").select("h3").text(geography.properties.name);
 	        	drawGraph(geography.id, 'in');
 	        	drawGraph(geography.id, 'out');
-	        	drawDonut(geography.id);
+	        	drawDonut(geography.id, sliderYear);
+	        	clickedCountry = geography.id;
 	        });
 		},
  
@@ -99,7 +103,12 @@ window.onload = function() {
 			csvByCountryOfOrigin[d.key] = d.values;
 		});
 		// -----------------------------------------------
-		drawArcs(1975);
+		drawArcs(sliderYear);
+	});
+
+	d3.csv("data/countrycodes.csv", function(data) {
+		// TODO
+    	
 	});
 
 	
@@ -109,7 +118,11 @@ window.onload = function() {
     	.min(1975)
     	.max(2013)
     	.step(1)
-    	.on("slide", function(evt, value) {drawArcs(value);}));
+    	.on("slide", function(evt, value) {
+    		sliderYear = value;
+    		drawArcs(sliderYear);
+    		drawDonut(clickedCountry,sliderYear);
+    	}));
 
 	/* draw arcs on the map */
 	function drawArcs(year) {
@@ -139,188 +152,67 @@ window.onload = function() {
 		});
 
 
-		custom_map.arc(plotArray);//, {strokeWidth: 0.1}, arcSharpness: 0.5, strokeColor: '#DD1C77'});
+		custom_map.arc(plotArray, {arcSharpness: 0.5});//, {strokeWidth: 0.1}, arcSharpness: 0.5, strokeColor: '#DD1C77'});
 	};
 
-// donut init
 
-function makeDonut(id) {
-	var width = 400,
-	    height = 180,
-		radius = Math.min(width, height) / 2;
 
-	var svg = d3.select(id)
-		.attr("width", width)
-		.attr("height", height)
-		.select("g");
+	// -- Donut Pie Chart ---------------------------------
+	// from: http://bl.ocks.org/dbuezas/9306799
 
-	svg.append("g")
-		.attr("class", "slices");
-	svg.append("g")
-		.attr("class", "labels");
-	svg.append("g")
-		.attr("class", "lines");
+	var donut1 = makeDonut("#donut1");
+	var donut2 = makeDonut("#donut2");
 
-	svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+	function drawDonut(countryCode, year) {
 
-	return svg;
+		var countryData1 = csvByCountryOfAsylum[countryCode];
 
-};
+		// count the refugees
+		var pieData1 = [];
 
-// -- Donut Pie Chart ---------------------------------
-// from: http://bl.ocks.org/dbuezas/9306799
-
-var donut1 = makeDonut("#donut1");
-var donut2 = makeDonut("#donut2");
-
-function drawDonut(countryCode) {
-
-	var countryData1 = csvByCountryOfAsylum[countryCode];
-
-	// count the refugees
-	var pieData1 = [];
-	
-	countryData1.forEach(function(d) {
-		if (d.year == 2013) {
-			pieData1.push({label: d.countryOfOrigin , value: +d.refugees});
+		if (typeof countryData1 !== "undefined") {	
+			countryData1.forEach(function(d) {
+				if (d.year == year) {
+					pieData1.push({label: d.countryOfOrigin , value: +d.refugees});
+				};
+			});
 		};
-	});
 
-	change(donut1,pieData1);
-
-	var countryData2 = csvByCountryOfOrigin[countryCode];
-
-	// count the refugees
-	var pieData2 = [];
-	
-	countryData2.forEach(function(d) {
-		if (d.year == 2013) {
-			pieData2.push({label: d.countryOfAsylum , value: +d.refugees});
+		if (pieData1.length == 0) {
+			pieData1.push({label: "NO DATA" , value: 0});
 		};
-	});
 
-	change(donut2,pieData2);
+		change(donut1,pieData1);
+
+		//-------------------------------------------------------------
+
+		var countryData2 = csvByCountryOfOrigin[countryCode];
+
+		// count the refugees
+		var pieData2 = [];
+		
+		if (typeof countryData1 !== "undefined") {
+			countryData2.forEach(function(d) {
+				if (d.year == year) {
+					pieData2.push({label: d.countryOfAsylum , value: +d.refugees});
+				};
+			});
+		};
+
+		if (pieData2.length == 0) {
+			pieData2.push({label: "NO DATA" , value: 0});
+		}
+
+		change(donut2,pieData2);
 
 
-}; /* end of drawDonut */
-
-function change(svg, data) {
-
-	var width = 400,
-	    height = 180,
-		radius = Math.min(width, height) / 2;
-
-	var pie = d3.layout.pie()
-		.value(function(d) {
-			return d.value;
-		});
-
-	var arc = d3.svg.arc()
-		.outerRadius(radius * 0.8)
-		.innerRadius(radius * 0.4);
-
-	var outerArc = d3.svg.arc()
-		.innerRadius(radius * 0.9)
-		.outerRadius(radius * 0.9);
-
-	var key = function(d){ return d.data.label; };
-
-	var color = d3.scale.category20c();
-
-	/* ------- PIE SLICES -------*/
-	var slice = svg.select(".slices").selectAll("path.slice")
-		.data(pie(data), key);
-
-	slice.enter()
-		.insert("path")
-		.style("fill", function(d) { return color(d.data.label); })
-		.attr("class", "slice");
-
-	slice		
-		.transition().duration(1000)
-		.attrTween("d", function(d) {
-			this._current = this._current || d;
-			var interpolate = d3.interpolate(this._current, d);
-			this._current = interpolate(0);
-			return function(t) {
-				return arc(interpolate(t));
-			};
-		})
-
-	slice.exit()
-		.remove();
-
-	/* ------- TEXT LABELS -------*/
-
-	var text = svg.select(".labels").selectAll("text")
-		.data(pie(data), key);
-
-	text.enter()
-		.append("text")
-		.attr("dy", ".35em")
-		.text(function(d) {
-			return d.data.label;
-		});
-	
-	function midAngle(d){
-		return d.startAngle + (d.endAngle - d.startAngle)/2;
-	}
-
-	text.transition().duration(1000)
-		.attrTween("transform", function(d) {
-			this._current = this._current || d;
-			var interpolate = d3.interpolate(this._current, d);
-			this._current = interpolate(0);
-			return function(t) {
-				var d2 = interpolate(t);
-				var pos = outerArc.centroid(d2);
-				pos[0] = radius * (midAngle(d2) < Math.PI ? 1 : -1);
-				return "translate("+ pos +")";
-			};
-		})
-		.styleTween("text-anchor", function(d){
-			this._current = this._current || d;
-			var interpolate = d3.interpolate(this._current, d);
-			this._current = interpolate(0);
-			return function(t) {
-				var d2 = interpolate(t);
-				return midAngle(d2) < Math.PI ? "start":"end";
-			};
-		});
-
-	text.exit()
-		.remove();
-
-	/* ------- SLICE TO TEXT POLYLINES -------*/
-
-	var polyline = svg.select(".lines").selectAll("polyline")
-		.data(pie(data), key);
-	
-	polyline.enter()
-		.append("polyline");
-
-	polyline.transition().duration(1000)
-		.attrTween("points", function(d){
-			this._current = this._current || d;
-			var interpolate = d3.interpolate(this._current, d);
-			this._current = interpolate(0);
-			return function(t) {
-				var d2 = interpolate(t);
-				var pos = outerArc.centroid(d2);
-				pos[0] = radius * 0.95 * (midAngle(d2) < Math.PI ? 1 : -1);
-				return [arc.centroid(d2), outerArc.centroid(d2), pos];
-			};			
-		});
-	
-	polyline.exit()
-		.remove();
-}; 
-
+	}; /* end of drawDonut */
 
 
 
 }; /* end of window.onload */
 
+// ############################################################################
 
 /* draw graph with total number of refugees per year */
 function drawGraph(countryCode, option) {
@@ -445,4 +337,142 @@ function drawGraph(countryCode, option) {
 
 
 
+// donut init
 
+function makeDonut(id) {
+	var width = 400,
+	    height = 180,
+		radius = Math.min(width, height) / 2;
+
+	var svg = d3.select(id)
+		.attr("width", width)
+		.attr("height", height)
+		.select("g");
+
+	svg.append("g")
+		.attr("class", "slices");
+	svg.append("g")
+		.attr("class", "labels");
+	svg.append("g")
+		.attr("class", "lines");
+
+	svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+	return svg;
+
+};
+
+
+// update donut
+
+function change(svg, data) {
+
+	var width = 400,
+	    height = 180,
+		radius = Math.min(width, height) / 2;
+
+	var pie = d3.layout.pie()
+		.value(function(d) {
+			return d.value;
+		});
+
+	var arc = d3.svg.arc()
+		.outerRadius(radius * 0.8)
+		.innerRadius(radius * 0.4);
+
+	var outerArc = d3.svg.arc()
+		.innerRadius(radius * 0.9)
+		.outerRadius(radius * 0.9);
+
+	var key = function(d){ return d.data.label; };
+
+	var color = d3.scale.category20c();
+
+	/* ------- PIE SLICES -------*/
+	var slice = svg.select(".slices").selectAll("path.slice")
+		.data(pie(data), key);
+
+	slice.enter()
+		.insert("path")
+		.style("fill", function(d) { return color(d.data.label); })
+		.attr("class", "slice");
+
+	slice		
+		.transition().duration(1000)
+		.attrTween("d", function(d) {
+			this._current = this._current || d;
+			var interpolate = d3.interpolate(this._current, d);
+			this._current = interpolate(0);
+			return function(t) {
+				return arc(interpolate(t));
+			};
+		})
+
+	slice.exit()
+		.remove();
+
+	/* ------- TEXT LABELS -------*/
+
+	var text = svg.select(".labels").selectAll("text")
+		.data(pie(data), key);
+
+	text.enter()
+		.append("text")
+		.attr("dy", ".35em")
+		.text(function(d) {
+			return d.data.label;
+		});
+	
+	function midAngle(d){
+		return d.startAngle + (d.endAngle - d.startAngle)/2;
+	}
+
+	text.transition().duration(1000)
+		.attrTween("transform", function(d) {
+			this._current = this._current || d;
+			var interpolate = d3.interpolate(this._current, d);
+			this._current = interpolate(0);
+			return function(t) {
+				var d2 = interpolate(t);
+				var pos = outerArc.centroid(d2);
+				pos[0] = radius * (midAngle(d2) < Math.PI ? 1 : -1);
+				return "translate("+ pos +")";
+			};
+		})
+		.styleTween("text-anchor", function(d){
+			this._current = this._current || d;
+			var interpolate = d3.interpolate(this._current, d);
+			this._current = interpolate(0);
+			return function(t) {
+				var d2 = interpolate(t);
+				return midAngle(d2) < Math.PI ? "start":"end";
+			};
+		});
+
+	text.exit()
+		.remove();
+
+	/* ------- SLICE TO TEXT POLYLINES -------*/
+
+	var polyline = svg.select(".lines").selectAll("polyline")
+		.data(pie(data), key);
+	
+	polyline.enter()
+		.append("polyline");
+
+	polyline.transition().duration(1000)
+		.attrTween("points", function(d){
+			this._current = this._current || d;
+			var interpolate = d3.interpolate(this._current, d);
+			this._current = interpolate(0);
+			return function(t) {
+				var d2 = interpolate(t);
+				var pos = outerArc.centroid(d2);
+				pos[0] = radius * 0.95 * (midAngle(d2) < Math.PI ? 1 : -1);
+				return [arc.centroid(d2), outerArc.centroid(d2), pos];
+			};			
+		});
+	
+	polyline.exit()
+		.remove();
+}; 
