@@ -48,3 +48,6 @@ In the end I made a function for the init part, which returns the SVG element, w
 
 # Daty 15
 Changed slider to d3.slider.
+
+# Weekend
+Change relation map:graphs from 8:4 to 7:5, so there is more space for donut(+text). Displaying full country names now in donut. Changed colours of slider, so it is more outstanding.

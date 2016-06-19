@@ -5,6 +5,7 @@
 var csvByCountryOfAsylum = {};
 var csvByCountryOfOrigin = {};
 var csvByYear = {};
+var countryCodes = {};
 
 var sliderYear = 1975;
 var clickedCountry = "Various";
@@ -107,7 +108,9 @@ window.onload = function() {
 	});
 
 	d3.csv("data/countrycodes.csv", function(data) {
-		// TODO
+		data.forEach(function(d){
+			countryCodes[d.code] = d.name;
+		})
     	
 	});
 
@@ -340,7 +343,7 @@ function drawGraph(countryCode, option) {
 // donut init
 
 function makeDonut(id) {
-	var width = 400,
+	var width = 459,
 	    height = 180,
 		radius = Math.min(width, height) / 2;
 
@@ -420,7 +423,12 @@ function change(svg, data) {
 		.append("text")
 		.attr("dy", ".35em")
 		.text(function(d) {
-			return d.data.label;
+			if (d.data.label.length == 3) {
+				return countryCodes[d.data.label];
+			}
+			else {
+				return d.data.label;
+			};
 		});
 	
 	function midAngle(d){
