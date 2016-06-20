@@ -16,9 +16,18 @@ body {
 	position: relative;
 }
 
+.rightPane {
+	padding-left: 0px;
+    padding-right: 0px;
+}
+
 .info {
 	font-size: x-small;
 }
+
+/*.datamaps-arc {
+	stroke: rgb(0, 0, 0) !important;
+}*/
 
 
 /* Graph */

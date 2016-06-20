@@ -42,6 +42,11 @@ window.onload = function() {
 	        	drawGraph(geography.id, 'out');
 	        	drawDonut(geography.id, sliderYear);
 	        	clickedCountry = geography.id;
+
+	        	d3.selectAll(".datamaps-arc").forEach(function(d) {
+	        		console.log(d);
+	        	});
+	        	
 	        });
 		},
  
@@ -384,7 +389,7 @@ function drawGraph(countryCode, option) {
 // donut init
 
 function makeDonut(id) {
-	var width = 459,
+	var width = 429,
 	    height = 190,
 		radius = Math.min(width, height) / 2;
 
