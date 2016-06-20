@@ -46,8 +46,11 @@ Started over again, and this time used an example from internet which already ha
 Because the solution for the pie chart yesterday has a part to "initialise" and a part to update (which needs to reach the variables from the init part), I tried to make a class for the pie chart, but D3 doesn't like it, so it is not possible.
 In the end I made a function for the init part, which returns the SVG element, which then is stored in a variable, so the update function can use that. End of the day: 2 pie charts (->donut) working. (Only text from small slices overlaps)
 
-# Daty 15
+# Day 15
 Changed slider to d3.slider.
 
 # Weekend
 Change relation map:graphs from 8:4 to 7:5, so there is more space for donut(+text). Displaying full country names now in donut. Changed colours of slider, so it is more outstanding.
+
+# Day 16
+In donut, if countries have a too small contribution, they are grouped into the "Various" slice.

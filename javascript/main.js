@@ -137,7 +137,7 @@ window.onload = function() {
 
 		var plotArray = [];
 		csvByYear[year].forEach(function(d){
-			if (d.refugees > 1000) {
+			if (d.refugees > 10000) {
 				//console.log(d.countryOfOrigin);
 				if (d.countryOfOrigin == "Various" || d.countryOfOrigin == "Stateless") {
 					plotArray.push({origin: {latitude: 49.553725, longitude: -31.684570}, destination: d.countryOfAsylum, strokeWidth: thickness(d.refugees)})
@@ -145,7 +145,7 @@ window.onload = function() {
 				if (d.countryOfAsylum == "Various" || d.countryOfAsylum == "Stateless") {
 					plotArray.push({origin: d.countryOfOrigin , destination: {latitude: 49.553725, longitude: -31.684570}, strokeWidth: thickness(d.refugees)})
 				}
-				if (d.countryOfOrigin == "Tibetans") {
+				if (d.countryOfOrigin == "Tibet") {
 					plotArray.push({origin: {latitude: 29.647535, longitude: 91.117525}, destination: d.countryOfAsylum, strokeWidth: thickness(d.refugees)})
 				}
 				else {
@@ -172,13 +172,34 @@ window.onload = function() {
 
 		// count the refugees
 		var pieData1 = [];
+		var total1 = 0;
+		var various1 = 0;
 
 		if (typeof countryData1 !== "undefined") {	
 			countryData1.forEach(function(d) {
 				if (d.year == year) {
-					pieData1.push({label: d.countryOfOrigin , value: +d.refugees});
+					total1 += +d.refugees;
+				};
+				
+			});
+		};
+
+
+		if (typeof countryData1 !== "undefined") {	
+			countryData1.forEach(function(d) {
+				if (d.year == year) {
+					if (+d.refugees/total1 < 0.05 || d.countryOfOrigin == "Various") {
+						various1 += +d.refugees;
+					}
+					else {
+						pieData1.push({label: d.countryOfOrigin , value: +d.refugees});
+					};
 				};
 			});
+		};
+
+		if (various1 > 0) {
+			pieData1.push({label: "Various" , value: various1});
 		};
 
 		if (pieData1.length == 0) {
@@ -193,13 +214,33 @@ window.onload = function() {
 
 		// count the refugees
 		var pieData2 = [];
-		
-		if (typeof countryData1 !== "undefined") {
+		var total2 = 0;
+		var various2 = 0;
+
+		if (typeof countryData2 !== "undefined") {	
 			countryData2.forEach(function(d) {
 				if (d.year == year) {
+					total2 += +d.refugees;
+				};
+				
+			});
+		};
+		
+		if (typeof countryData2 !== "undefined") {
+			countryData2.forEach(function(d) {
+				if (d.year == year) {
+					if (+d.refugees/total2 < 0.05 || d.countryOfAsylum == "Various") {
+						various2 += +d.refugees;
+					}
+					else {
 					pieData2.push({label: d.countryOfAsylum , value: +d.refugees});
+					};
 				};
 			});
+		};
+
+		if (various2 > 0) {
+			pieData2.push({label: "Various" , value: various2});
 		};
 
 		if (pieData2.length == 0) {
@@ -344,7 +385,7 @@ function drawGraph(countryCode, option) {
 
 function makeDonut(id) {
 	var width = 459,
-	    height = 180,
+	    height = 190,
 		radius = Math.min(width, height) / 2;
 
 	var svg = d3.select(id)
@@ -377,7 +418,9 @@ function change(svg, data) {
 	var pie = d3.layout.pie()
 		.value(function(d) {
 			return d.value;
-		});
+		})
+		.startAngle(90 * (Math.PI/180))
+		.endAngle(450 * (Math.PI/180));
 
 	var arc = d3.svg.arc()
 		.outerRadius(radius * 0.8)
@@ -443,7 +486,7 @@ function change(svg, data) {
 			return function(t) {
 				var d2 = interpolate(t);
 				var pos = outerArc.centroid(d2);
-				pos[0] = radius * (midAngle(d2) < Math.PI ? 1 : -1);
+				pos[0] = radius * ((midAngle(d2) > 2*Math.PI || midAngle(d2) < Math.PI) ? 1 : -1);
 				return "translate("+ pos +")";
 			};
 		})
@@ -453,7 +496,7 @@ function change(svg, data) {
 			this._current = interpolate(0);
 			return function(t) {
 				var d2 = interpolate(t);
-				return midAngle(d2) < Math.PI ? "start":"end";
+				return (midAngle(d2) > 2*Math.PI || midAngle(d2) < Math.PI) ? "start":"end";
 			};
 		});
 
@@ -476,7 +519,7 @@ function change(svg, data) {
 			return function(t) {
 				var d2 = interpolate(t);
 				var pos = outerArc.centroid(d2);
-				pos[0] = radius * 0.95 * (midAngle(d2) < Math.PI ? 1 : -1);
+				pos[0] = radius * 0.95 * ((midAngle(d2) > 2*Math.PI || midAngle(d2) < Math.PI) ? 1 : -1);
 				return [arc.centroid(d2), outerArc.centroid(d2), pos];
 			};			
 		});
