@@ -43,9 +43,9 @@ window.onload = function() {
 	        	drawDonut(geography.id, sliderYear);
 	        	clickedCountry = geography.id;
 
-	        	d3.selectAll(".datamaps-arc").forEach(function(d) {
-	        		console.log(d);
-	        	});
+	        	d3.selectAll(".datamaps-arc").each(function(d) {
+	        		console.log(JSON.parse(d3.select(this).attr("data-info").origin));
+	        	}) ;
 	        	
 	        });
 		},
