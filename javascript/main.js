@@ -20,8 +20,8 @@ window.onload = function() {
         setProjection: function(element, options) {
 		      var projection, path;
 		      projection = d3.geo.mercator()                          // the d3 projection
-		                     .translate([(450.0), (150.0)])      // and some options
-		                     .scale(  900  / Math.PI)
+		                     // .translate([(450.0), (150.0)])      // and some options
+		                     // .scale(  900  / Math.PI)
 		                     .center([25, 62]);
 		      path = d3.geo.path()
 		               .projection( projection );
@@ -38,19 +38,31 @@ window.onload = function() {
 
 		    datamap.svg.selectAll('.datamaps-subunit').on('click', function(geography) {
 	        	d3.select("#info").select("h3").text(geography.properties.name);
-	        	drawGraph(geography.id, 'in');
-	        	drawGraph(geography.id, 'out');
-	        	drawDonut(geography.id, sliderYear);
 	        	clickedCountry = geography.id;
 
+	        	drawGraph(clickedCountry, 'in');
+	        	drawGraph(clickedCountry, 'out');
+	        	drawDonut(clickedCountry, sliderYear);
+	        	clickedCountry = geography.id;
+
+	        	// color the arcs that go to the country you clicked on
 	        	d3.selectAll(".datamaps-arc").each(function(d) {
-	        		console.log(JSON.parse(d3.select(this).attr("data-info").origin));
+	        		if (JSON.parse(d3.select(this).attr("data-info")).destination == clickedCountry) {
+	        			this.style.stroke = "red";
+	        		}
+	        		else if (JSON.parse(d3.select(this).attr("data-info")).origin == clickedCountry) {
+	        			this.style.stroke = "green";
+	        		}
+	        		else {
+	        			this.style.stroke = "black";
+	        		}
 	        	}) ;
 	        	
 	        });
 		},
  
-         
+        fills: { defaultFill: '#F5F5F5' },
+        
         // customize the map
         geographyConfig: {
  
@@ -160,7 +172,7 @@ window.onload = function() {
 		});
 
 
-		custom_map.arc(plotArray, {arcSharpness: 0.5});//, {strokeWidth: 0.1}, arcSharpness: 0.5, strokeColor: '#DD1C77'});
+		custom_map.arc(plotArray, {arcSharpness: 0.2, strokeColor: '#000'});//, {strokeWidth: 0.1}, arcSharpness: 0.5, strokeColor: '#DD1C77'});
 	};
 
 

@@ -1,6 +1,4 @@
 -> Serbia (and Kosovo: S/RES/1244 (1999))
 - lijndikte van pijlen t.o.v. wereldpopulatie -> indelen in categorien
-- pijlen: per land kleuren
-- donut: landnamen voluit schrijven
-- donut: kleine percentages toevoegen aan de categorie "Various"
-- donut (extra): tooltip
+- Various: maak "knop"
+- donut: tooltip
