@@ -32,11 +32,11 @@ body {
 
 /* Graph */
 .historyIn {
-	fill: red;
+	fill: green;
 }
 
 .historyOut {
-	fill: green;
+	fill: red;
 }
 
 .bar:hover {

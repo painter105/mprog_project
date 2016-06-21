@@ -11,6 +11,33 @@ var sliderYear = 1975;
 var clickedCountry = "Various";
 
 
+// calculate the colors to fill the map
+function colorMap(data) {
+	// Datamaps expect data in format:
+    // { "USA": { "fillColor": "#42a844", numberOfWhatever: 75},
+    //   "FRA": { "fillColor": "#8dc386", numberOfWhatever: 43 } }
+
+    // We need to colorize every country based on "numberOfWhatever"
+    // colors should be uniq for every value.
+    // For this purpose we create palette(using min/max series-value)
+    
+    var minValue = 0,
+        maxValue = 1000000000000;
+    // create color palette function
+    // color can be whatever you wish
+    var paletteScale = d3.scale.linear()
+            .domain([minValue,maxValue])
+            .range(["#EFEFFF","#02386F"]); // blue color
+    // fill dataset in appropriate format
+    series.forEach(function(item){ //
+        // item example value ["USA", 70]
+        var iso = item[0],
+                value = item[1];
+        dataset[iso] = { numberOfThings: value, fillColor: paletteScale(value) };
+    });
+};
+
+
 window.onload = function() {
  	var custom_map = new Datamap({
  
@@ -42,27 +69,27 @@ window.onload = function() {
 
 	        	drawGraph(clickedCountry, 'in');
 	        	drawGraph(clickedCountry, 'out');
-	        	drawDonut(clickedCountry, sliderYear);
-	        	clickedCountry = geography.id;
+	        	drawDonut(sliderYear, clickedCountry);
+	        	drawArcs(sliderYear, clickedCountry);
 
-	        	// color the arcs that go to the country you clicked on
-	        	d3.selectAll(".datamaps-arc").each(function(d) {
-	        		if (JSON.parse(d3.select(this).attr("data-info")).destination == clickedCountry) {
-	        			this.style.stroke = "red";
-	        		}
-	        		else if (JSON.parse(d3.select(this).attr("data-info")).origin == clickedCountry) {
-	        			this.style.stroke = "green";
-	        		}
-	        		else {
-	        			this.style.stroke = "black";
-	        		}
-	        	}) ;
+	        	// // color the arcs that go to the country you clicked on
+	        	// d3.selectAll(".datamaps-arc").each(function(d) {
+	        	// 	if (JSON.parse(d3.select(this).attr("data-info")).destination == clickedCountry) {
+	        	// 		this.style.stroke = "red";
+	        	// 	}
+	        	// 	else if (JSON.parse(d3.select(this).attr("data-info")).origin == clickedCountry) {
+	        	// 		this.style.stroke = "green";
+	        	// 	}
+	        	// 	else {
+	        	// 		this.style.stroke = "black";
+	        	// 	}
+	        	// }) ;
 	        	
 	        });
 		},
  
         fills: { defaultFill: '#F5F5F5' },
-        
+
         // customize the map
         geographyConfig: {
  
@@ -140,13 +167,19 @@ window.onload = function() {
     	.step(1)
     	.on("slide", function(evt, value) {
     		sliderYear = value;
-    		drawArcs(sliderYear);
-    		drawDonut(clickedCountry,sliderYear);
+    		drawArcs(sliderYear, clickedCountry);
+    		drawDonut(sliderYear, clickedCountry);
     	}));
 
+    // checkbox verandering
+    d3.select("#drawAll").on("click", function(evt) {
+    		drawArcs(sliderYear, clickedCountry);
+    	});
+
 	/* draw arcs on the map */
-	function drawArcs(year) {
-		//d3.selectAll(".datamaps-arc").remove();
+	function drawArcs(year, country) {
+		var country = typeof country !== 'undefined' ?  country : 0;
+		var drawAll = document.getElementById("drawAll").checked;
 
 		function thickness(amount) {
 			return (amount/3272290) * 3 + 0.05
@@ -155,24 +188,29 @@ window.onload = function() {
 		var plotArray = [];
 		csvByYear[year].forEach(function(d){
 			if (d.refugees > 10000) {
-				//console.log(d.countryOfOrigin);
-				if (d.countryOfOrigin == "Various" || d.countryOfOrigin == "Stateless") {
-					plotArray.push({origin: {latitude: 49.553725, longitude: -31.684570}, destination: d.countryOfAsylum, strokeWidth: thickness(d.refugees)})
+
+				if (d.countryOfOrigin == "Various" || d.countryOfOrigin == "Stateless" ) {var from = {latitude: 49.553725, longitude: -31.684570};}
+				else if (d.countryOfOrigin == "Tibet") {var from = {latitude: 29.647535, longitude: 91.117525}}
+				else {var from = d.countryOfOrigin;};
+				
+				if (d.countryOfAsylum == "Various" || d.countryOfAsylum == "Stateless" ) {var to = {latitude: 49.553725, longitude: -31.684570};}
+				else {var to = d.countryOfAsylum;};
+				
+
+				if (from == country) {
+					plotArray.push({origin: from, destination: to, strokeWidth: thickness(d.refugees), strokeColor: 'red'});
 				}
-				if (d.countryOfAsylum == "Various" || d.countryOfAsylum == "Stateless") {
-					plotArray.push({origin: d.countryOfOrigin , destination: {latitude: 49.553725, longitude: -31.684570}, strokeWidth: thickness(d.refugees)})
+				else if (to == country) {
+					plotArray.push({origin: from, destination: to, strokeWidth: thickness(d.refugees), strokeColor: 'green'});
 				}
-				if (d.countryOfOrigin == "Tibet") {
-					plotArray.push({origin: {latitude: 29.647535, longitude: 91.117525}, destination: d.countryOfAsylum, strokeWidth: thickness(d.refugees)})
-				}
-				else {
-					plotArray.push({origin: d.countryOfOrigin, destination: d.countryOfAsylum, strokeWidth: thickness(d.refugees)})
-				}
+				else if (drawAll) {
+					plotArray.push({origin: from, destination: to, strokeWidth: thickness(d.refugees), strokeColor: '#000'});
+				};
 			};
 		});
 
 
-		custom_map.arc(plotArray, {arcSharpness: 0.2, strokeColor: '#000'});//, {strokeWidth: 0.1}, arcSharpness: 0.5, strokeColor: '#DD1C77'});
+		custom_map.arc(plotArray, {arcSharpness: 0.2});//, {strokeWidth: 0.1}, arcSharpness: 0.5, strokeColor: '#DD1C77'});
 	};
 
 
@@ -183,7 +221,7 @@ window.onload = function() {
 	var donut1 = makeDonut("#donut1");
 	var donut2 = makeDonut("#donut2");
 
-	function drawDonut(countryCode, year) {
+	function drawDonut(year, countryCode) {
 
 		var countryData1 = csvByCountryOfAsylum[countryCode];
 
