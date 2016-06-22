@@ -28,7 +28,7 @@
 	<!-- my own scripts -->
 	<script type="text/javascript" src="javascript/main.js"></script>
 
-	<div id="head"><h1>Movement of Refugees</h1></div>
+	<div id="head"><h1> Movement of Refugees</h1></div>
 	
 
   </head>
@@ -47,29 +47,23 @@
 		  <div class="col-xs-12 col-md-4 rightPane">
 
 		  	<section id="info">
-		      <h3>Info</h3>
+		      <h3> &lt no country selected &gt</h3>
+		      <div class="checkbox">
+				  <label>
+				    <input type="checkbox" value="" id="drawAll">
+				    Focus on country
+				  </label>
+				</div>
 		    </section>
 
 		  	<ul class="nav nav-tabs">
-			  <li class="active"><a data-toggle="tab" href="#home">Options</a></li>
-			  <li><a data-toggle="tab" href="#history">History</a></li>
+			  <li class="active"><a data-toggle="tab" href="#history">History</a></li>
 			  <li><a data-toggle="tab" href="#origin">Countries</a></li>
 			</ul>
 
 			<div class="tab-content">
-			  <div id="home" class="tab-pane fade in active">
-			    <h4>Options</h4>
 
-			    <div class="checkbox">
-				  <label>
-				    <input type="checkbox" value="" id="drawAll" checked="yes">
-				    Show All
-				  </label>
-				</div>
-
-			  </div>
-
-			  <div id="history" class="tab-pane fade">
+			  <div id="history" class="tab-pane fade in active">
 			    <p>Total incomming refugees per year.</p>
 			    <svg id="historyIn"> <g> </g> </svg>
 			    <p>Total outgoing refugees per year.</p>

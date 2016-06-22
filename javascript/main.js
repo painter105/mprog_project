@@ -1,13 +1,13 @@
 // Patrick Schilder
 
-"use strict";
+//"use strict";
 
 var csvByCountryOfAsylum = {};
 var csvByCountryOfOrigin = {};
 var csvByYear = {};
 var countryCodes = {};
 
-var sliderYear = 1975;
+var sliderYear = 2013;
 var clickedCountry = "Various";
 
 
@@ -117,6 +117,21 @@ window.onload = function() {
  
     });
 
+    var bombs = [{
+	    name: 'Various countries',
+	    radius: 5,
+	    latitude: 49.553725,
+	    longitude: -31.684570,
+	   }];
+	//draw bubbles for bombs
+	custom_map.bubbles(bombs, {
+	    popupTemplate: function (geo, data) {
+	            return ['<div class="hoverinfo">',
+	            'Various countries',
+	            '</div>'].join('');
+	    }
+	});
+
 
 
 	/* read in CSV */
@@ -164,6 +179,7 @@ window.onload = function() {
     	.axis(true)
     	.min(1975)
     	.max(2013)
+    	.value(2013)
     	.step(1)
     	.on("slide", function(evt, value) {
     		sliderYear = value;
@@ -176,18 +192,30 @@ window.onload = function() {
     		drawArcs(sliderYear, clickedCountry);
     	});
 
+
+
 	/* draw arcs on the map */
 	function drawArcs(year, country) {
 		var country = typeof country !== 'undefined' ?  country : 0;
-		var drawAll = document.getElementById("drawAll").checked;
+		var focus = document.getElementById("drawAll").checked;
+
+		var border = focus ? 1000 : 20000;
 
 		function thickness(amount) {
-			return (amount/3272290) * 3 + 0.05
+			// the thickness is based on the following formula (except for amount < 10000)
+			// return (amount/3000000) * 5 +0.4
+			if (amount>1000000) {return 2;}
+			else if (amount>500000) {return 1.00;}
+			else if (amount>100000) {return 0.55;}
+			else if (amount>50000) {return 0.48;}
+			else if (amount>10000) {return 0.42;}
+			else if (amount>5000) {return 0.30;}
+			else {return 0.20;};
 		}
 
 		var plotArray = [];
 		csvByYear[year].forEach(function(d){
-			if (d.refugees > 10000) {
+			if (d.refugees > border) {
 
 				if (d.countryOfOrigin == "Various" || d.countryOfOrigin == "Stateless" ) {var from = {latitude: 49.553725, longitude: -31.684570};}
 				else if (d.countryOfOrigin == "Tibet") {var from = {latitude: 29.647535, longitude: 91.117525}}
@@ -201,16 +229,16 @@ window.onload = function() {
 					plotArray.push({origin: from, destination: to, strokeWidth: thickness(d.refugees), strokeColor: 'red'});
 				}
 				else if (to == country) {
-					plotArray.push({origin: from, destination: to, strokeWidth: thickness(d.refugees), strokeColor: 'green'});
+					plotArray.push({origin: from, destination: to, strokeWidth: thickness(d.refugees), strokeColor: '#52D017'});
 				}
-				else if (drawAll) {
-					plotArray.push({origin: from, destination: to, strokeWidth: thickness(d.refugees), strokeColor: '#000'});
+				else if (!(focus)) {
+					plotArray.push({origin: from, destination: to, strokeWidth: thickness(d.refugees), strokeColor: 'black'});
 				};
 			};
 		});
 
-
 		custom_map.arc(plotArray, {arcSharpness: 0.2});//, {strokeWidth: 0.1}, arcSharpness: 0.5, strokeColor: '#DD1C77'});
+		
 	};
 
 
@@ -487,16 +515,33 @@ function change(svg, data) {
 
 	var key = function(d){ return d.data.label; };
 
-	var color = d3.scale.category20c();
+	var color = d3.scale.category20();
 
 	/* ------- PIE SLICES -------*/
 	var slice = svg.select(".slices").selectAll("path.slice")
 		.data(pie(data), key);
 
+	var div = d3.select("body")
+        .append("div") 
+        .attr("class", "donutTooltip");
+
 	slice.enter()
 		.insert("path")
 		.style("fill", function(d) { return color(d.data.label); })
-		.attr("class", "slice");
+		.attr("class", "slice")
+		// tooltip
+		.on("mousemove",function(d){
+	        var mouseVal = d3.mouse(this);
+	        div
+	        .html(d.data.value)
+	        .style("left", (d3.event.pageX+12) + "px")
+	        .style("top", (d3.event.pageY-10) + "px")
+	        .style("opacity", 1)
+	        .style("display","block");
+		})
+
+    	.on("mouseout",function(){div.html(" ").style("display","none");})
+
 
 	slice		
 		.transition().duration(1000)

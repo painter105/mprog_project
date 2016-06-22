@@ -25,14 +25,10 @@ body {
 	font-size: x-small;
 }
 
-/*.datamaps-arc {
-	stroke: rgb(0, 0, 0) !important;
-}*/
-
 
 /* Graph */
 .historyIn {
-	fill: green;
+	fill: #52D017;
 }
 
 .historyOut {
@@ -70,7 +66,22 @@ polyline{
 	stroke: black;
 	stroke-width: 2px;
 	fill: none;
+}
 
+.donutTooltip {
+position: absolute;	
+  text-align: center;	
+  height: 18px;		
+  padding: 2px;	
+  font: 12px sans-serif;	
+  background: grey;	
+  border: 0px;					
+  border-radius: 8px;
+  color:white;
+  box-shadow: -3px 3px 15px #888888;
+  opacity:0;	
+
+}
 
 
 

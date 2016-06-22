@@ -32,6 +32,8 @@ for line in undata:
     except:
         pass
 
-    #print line[0],line[1]
-
-    output.write( line[0] + ',' + line[1] + ',' + line [2][1:-1] + ',' + line [5][1:-1] + '\n' ) # [1:-1}] is om de "" haakjes weg te halen.
+    # Als het totale aantal vluchtelingen niet beschibaar is, pak het totale aantal 1951 UN protocol vluchtelingen.
+    if line[5] == '""':
+        output.write( line[0] + ',' + line[1] + ',' + line [2][1:-1] + ',' + line [4][1:-1] + '\n' ) # [1:-1}] is om de "" haakjes weg te halen.
+    else:
+        output.write( line[0] + ',' + line[1] + ',' + line [2][1:-1] + ',' + line [5][1:-1] + '\n' ) # [1:-1}] is om de "" haakjes weg te halen.

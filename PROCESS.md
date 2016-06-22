@@ -54,3 +54,10 @@ Change relation map:graphs from 8:4 to 7:5, so there is more space for donut(+te
 
 # Day 16
 In donut, if countries have a too small contribution, they are grouped into the "Various" slice.
+
+# Day 17
+Changed function drawArcs; now, arcs from the clicked country are drawn with colors (green/red depending on incommin/outgoing). And there is a checkbox to turn off/on the rest of the arcs.
+
+# Day 18
+Made tooltip for donut; added a "various countries" bubble; thickness of arcs is now devided in categories.
+Moved checkbox upward and renamed to "focus on checkbox"

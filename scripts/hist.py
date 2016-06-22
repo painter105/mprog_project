@@ -23,7 +23,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-plt.hist(plotlist, 200)
+plt.hist(plotlist, 2000)
 plt.title("Histogram")
 plt.xlabel("Value")
 plt.ylabel("Frequency")
