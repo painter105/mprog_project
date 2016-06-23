@@ -11,32 +11,6 @@ var sliderYear = 2013;
 var clickedCountry = "Various";
 
 
-// calculate the colors to fill the map
-function colorMap(data) {
-	// Datamaps expect data in format:
-    // { "USA": { "fillColor": "#42a844", numberOfWhatever: 75},
-    //   "FRA": { "fillColor": "#8dc386", numberOfWhatever: 43 } }
-
-    // We need to colorize every country based on "numberOfWhatever"
-    // colors should be uniq for every value.
-    // For this purpose we create palette(using min/max series-value)
-    
-    var minValue = 0,
-        maxValue = 1000000000000;
-    // create color palette function
-    // color can be whatever you wish
-    var paletteScale = d3.scale.linear()
-            .domain([minValue,maxValue])
-            .range(["#EFEFFF","#02386F"]); // blue color
-    // fill dataset in appropriate format
-    series.forEach(function(item){ //
-        // item example value ["USA", 70]
-        var iso = item[0],
-                value = item[1];
-        dataset[iso] = { numberOfThings: value, fillColor: paletteScale(value) };
-    });
-};
-
 
 window.onload = function() {
  	var custom_map = new Datamap({
@@ -72,18 +46,6 @@ window.onload = function() {
 	        	drawDonut(sliderYear, clickedCountry);
 	        	drawArcs(sliderYear, clickedCountry);
 
-	        	// // color the arcs that go to the country you clicked on
-	        	// d3.selectAll(".datamaps-arc").each(function(d) {
-	        	// 	if (JSON.parse(d3.select(this).attr("data-info")).destination == clickedCountry) {
-	        	// 		this.style.stroke = "red";
-	        	// 	}
-	        	// 	else if (JSON.parse(d3.select(this).attr("data-info")).origin == clickedCountry) {
-	        	// 		this.style.stroke = "green";
-	        	// 	}
-	        	// 	else {
-	        	// 		this.style.stroke = "black";
-	        	// 	}
-	        	// }) ;
 	        	
 	        });
 		},
@@ -117,14 +79,14 @@ window.onload = function() {
  
     });
 
-    var bombs = [{
+    var circle = [{
 	    name: 'Various countries',
 	    radius: 5,
 	    latitude: 49.553725,
 	    longitude: -31.684570,
 	   }];
-	//draw bubbles for bombs
-	custom_map.bubbles(bombs, {
+	//draw bubbles
+	custom_map.bubbles(circle, {
 	    popupTemplate: function (geo, data) {
 	            return ['<div class="hoverinfo">',
 	            'Various countries',
@@ -166,6 +128,8 @@ window.onload = function() {
 		drawArcs(sliderYear);
 	});
 
+
+	// reads in the file with the full country names for each country code. This is used for the donut chart
 	d3.csv("data/countrycodes.csv", function(data) {
 		data.forEach(function(d){
 			countryCodes[d.code] = d.name;
@@ -242,12 +206,11 @@ window.onload = function() {
 	};
 
 
+	var donut1 = makeDonut("#donut1");
+	var donut2 = makeDonut("#donut2");
 
 	// -- Donut Pie Chart ---------------------------------
 	// from: http://bl.ocks.org/dbuezas/9306799
-
-	var donut1 = makeDonut("#donut1");
-	var donut2 = makeDonut("#donut2");
 
 	function drawDonut(year, countryCode) {
 

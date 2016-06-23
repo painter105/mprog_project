@@ -71,3 +71,6 @@ Moved checkbox upward and renamed to "focus on checkbox". The checkbox is always
 
 # Day 19
 Writing the report and applying the final touch to the visualisations.
+
+# Day 20
+Planned: final presentation

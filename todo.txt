@@ -1,4 +1,5 @@
 -> Serbia (and Kosovo: S/RES/1244 (1999))
-- lijndikte van pijlen t.o.v. wereldpopulatie -> indelen in categorien
-- Various: maak "knop"
-- donut: tooltip
+- jaar ergens laten zien
+- klikken op bar
+- moet werken op 1024*768 (beamer)
+- fix colors in donut
