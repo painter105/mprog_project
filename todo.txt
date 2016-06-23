@@ -1,5 +1,0 @@
--> Serbia (and Kosovo: S/RES/1244 (1999))
-- jaar ergens laten zien
-- klikken op bar
-- moet werken op 1024*768 (beamer)
-- fix colors in donut

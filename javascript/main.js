@@ -1,14 +1,12 @@
 // Patrick Schilder
 
-//"use strict";
-
 var csvByCountryOfAsylum = {};
 var csvByCountryOfOrigin = {};
 var csvByYear = {};
 var countryCodes = {};
 
 var sliderYear = 2013;
-var clickedCountry = "Various";
+var clickedCountry;
 
 
 
@@ -21,7 +19,7 @@ window.onload = function() {
         setProjection: function(element, options) {
 		      var projection, path;
 		      projection = d3.geo.mercator()                          // the d3 projection
-		                     // .translate([(450.0), (150.0)])      // and some options
+		                     // .translate([(450.0), (150.0)])
 		                     // .scale(  900  / Math.PI)
 		                     .center([25, 62]);
 		      path = d3.geo.path()
@@ -60,7 +58,7 @@ window.onload = function() {
             borderWidth: 0.3,
  
             // set a less ridiculous highlight color
-            highlightFillColor: "yellow",
+            highlightFillColor: "#99b3ff",
  
             // let the borders be highlighted too
             highlightBorderColor: "red",
@@ -151,7 +149,9 @@ window.onload = function() {
     		drawDonut(sliderYear, clickedCountry);
     	}));
 
-    // checkbox verandering
+
+
+    // checkbox change
     d3.select("#drawAll").on("click", function(evt) {
     		drawArcs(sliderYear, clickedCountry);
     	});
@@ -209,8 +209,7 @@ window.onload = function() {
 	var donut1 = makeDonut("#donut1");
 	var donut2 = makeDonut("#donut2");
 
-	// -- Donut Pie Chart ---------------------------------
-	// from: http://bl.ocks.org/dbuezas/9306799
+	
 
 	function drawDonut(year, countryCode) {
 
@@ -252,7 +251,7 @@ window.onload = function() {
 			pieData1.push({label: "NO DATA" , value: 0});
 		};
 
-		change(donut1,pieData1);
+		updateDonut(donut1,pieData1);
 
 		//-------------------------------------------------------------
 
@@ -293,7 +292,7 @@ window.onload = function() {
 			pieData2.push({label: "NO DATA" , value: 0});
 		}
 
-		change(donut2,pieData2);
+		updateDonut(donut2,pieData2);
 
 
 	}; /* end of drawDonut */
@@ -426,13 +425,15 @@ function drawGraph(countryCode, option) {
 };
 
 
+// -- Donut Pie Chart ---------------------------------
+	// from: http://bl.ocks.org/dbuezas/9306799
 
 // donut init
 
 function makeDonut(id) {
-	var width = 429,
-	    height = 190,
-		radius = Math.min(width, height) / 2;
+	var width = 410,
+	    height = 170,
+		radius = Math.min(width, height) / 2 - 10;
 
 	var svg = d3.select(id)
 		.attr("width", width)
@@ -455,7 +456,7 @@ function makeDonut(id) {
 
 // update donut
 
-function change(svg, data) {
+function updateDonut(svg, data) {
 
 	var width = 400,
 	    height = 180,

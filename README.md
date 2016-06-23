@@ -1,22 +1,27 @@
-# Movement of refugees
+# Movement of Refugees
+*by Patrick Schilder*
 
-I want to make a visualisation where people can see an overview of where refugees are coming from and where they are going to. I want the visualisation to be of the whole world (and not only the part with the most refugees). This way the visualisation can be used also after a couple of year when perhaps there will be another movement of refugees.
+This is a visualisation where you can see an overview of where refugees are coming from and where they are going to. It covers the whole world and is zoomable. Every movement greater than 20 000 refugees is drawn on the map. You can move the slider below the map, to view the situation in different years.
+To view more information about a country, click on it. Information will appear on the right side of the page and lines on the map that affect the clicked country (if any) will be coloured. (See picture below)
 
-The visualisation should be an interactive map of the whole planet, where movement of refugees is visable as a kind of arrows between countries. Like on the sketch beneath.
+![](doc/screenshot.png)
+Selected country
 
-![](doc/first_sketch.png)
+ To filter out the lines from other countries, click on "Focus on country" just below the country name in the upper corner. Additionally, all movements of refugees greater than 1000 will be shown now. You can see this on the screenshot below.
 
-UPDATE: When you click on a country, the info about the country will not be shown in a tooltip, but in a separate panel on the right side.
+![](doc/screenshot_focus2.png)
+Focus on selected country.
 
-I will need data on numbers of refugees, where they’re from and where they go to. Sources: UN and similar. If there is irrelevant information, then first filter it out. Store the data as csv or JSON.
+#### External Sources
 
-Certainly this parts will be needed:
+A couple of external sources were used:
 
-  * Map (I will have to find one on the web)
-  * code that connects the numbers with the locations on the map
-  * code that draws flows between different countries (like flight routes from airplanes)
-  * code that opens a new window with detailed information and history about a refugee-stream / country together with a visualisation.
+* [D3.js](https://d3js.org/) library
+* [Bootstrap](http://getbootstrap.com/) library
+* [UN DATA](http://data.un.org/Data.aspx?q=refugee&d=UNHCR&f=indID%3aType-Ref) for data about refugees 
 
-To make the visualisation I plan to use d3. I will use a 2D map where the user can zoom in.
+Specific licenses apply to these sources.
+Additionaly some example code (not licensed) is used from internet forums.
 
-A similar visualisation is, for example [from the UNHCR](http://data.unhcr.org/mediterranean/country.php?id=502). Refugee "flows" are very detailed here. A reasonable small area is presented, and the the estimated daily refugee arrivals are shown. I want to visualise the movement of refugees on the whole planet and use yearly numbers and show - apart from the actual happenings - also the historical aspect.
+#### License
+The rest of this project if covered by [The Unlicense](http://unlicense.org/).
