@@ -19,4 +19,4 @@ Certainly this parts will be needed:
 
 To make the visualisation I plan to use d3. I will use a 2D map where the user can zoom in.
 
-A similar visualisation is, for example [from the UNHCR](http://data.unhcr.org/mediterranean/country.php?id=502) Refugee "flows" are very detailed here. A resanable small area is presented, and the the estimated daily refugee arrivals are shown. I want to visualise the movement of refugees on the whole planet and use yearly numbers and show - apart from the actual happenings - also the historical aspect.
+A similar visualisation is, for example [from the UNHCR](http://data.unhcr.org/mediterranean/country.php?id=502). Refugee "flows" are very detailed here. A reasonable small area is presented, and the the estimated daily refugee arrivals are shown. I want to visualise the movement of refugees on the whole planet and use yearly numbers and show - apart from the actual happenings - also the historical aspect.
